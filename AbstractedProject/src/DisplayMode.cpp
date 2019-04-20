@@ -15,7 +15,7 @@ DisplayMode::DisplayMode():
 DisplayMode::DisplayMode(const DXGI_MODE_DESC& desc):
 	Width(desc.Width),
 	Height(desc.Height),
-	RefreshRate(desc.RefreshRate.Numerator / desc.RefreshRate.Denominator),
+	RefreshRate(desc.RefreshRate.Numerator / (float)desc.RefreshRate.Denominator),
 	Format(desc.Format),
 	ScanlineOrder(desc.ScanlineOrdering),
 	Scaling(desc.Scaling)
