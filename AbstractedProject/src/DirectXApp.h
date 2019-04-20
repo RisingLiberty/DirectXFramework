@@ -6,6 +6,10 @@ class Window;
 class DirectXFactory;
 class Device;
 class Fence;
+class CommandQueue;
+class CommandAllocator;
+class CommandList;
+
 
 class DirectXApp
 {
@@ -26,6 +30,8 @@ private:
 	void Draw();
 	void CalculateFrameStats() const;
 
+	HRESULT CreateCommandObjects();
+
 private:
 	std::wstring m_AppName;
 	HINSTANCE m_hInstance;
@@ -34,6 +40,10 @@ private:
 	std::unique_ptr<DirectXFactory> m_Factory;
 	std::unique_ptr<Device> m_Device;
 	std::unique_ptr<Fence> m_Fence;
+	std::unique_ptr<CommandQueue> m_CommandQueue;
+	std::unique_ptr<CommandAllocator> m_CommandAllocator;
+	std::unique_ptr<CommandList> m_CommandList;
+
 
 	UINT m_RtvDescriptorSize;
 	UINT m_DsvDescriptorSize;

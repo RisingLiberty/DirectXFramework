@@ -6,6 +6,11 @@
 #include "Fence.h"
 #include "Adapter.h"
 
+#include "CommandQueue.h"
+#include "CommandAllocator.h"
+#include "CommandList.h"
+
+
 #include "Utils.h"
 
 namespace
@@ -99,7 +104,7 @@ HRESULT DirectXApp::InitializeD3D()
 	assert(m_4xMsaaQuality > 0 && "Unexpected MSAA quality level");
 
 	// Create command queue and command list.
-	//ThrowIfFailed(CreateCommandObjects());
+	ThrowIfFailedDefault(CreateCommandObjects());
 
 	// Create swapchain
 	//ThrowIfFailed(CreateSwapChain());
@@ -191,4 +196,24 @@ void DirectXApp::CalculateFrameStats() const
 		frameCount = 0;
 		timeElapsed += 1.0f;
 	}
+}
+
+HRESULT DirectXApp::CreateCommandObjects()
+{
+	D3D12_COMMAND_QUEUE_DESC queueDesc = {};
+	queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
+	queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
+
+	m_CommandQueue = std::make_unique<CommandQueue>(m_Device->GetDevice(), queueDesc);
+	m_CommandAllocator = std::make_unique<CommandAllocator>(m_Device->GetDevice(), D3D12_COMMAND_LIST_TYPE_DIRECT);
+
+	//We specify null for the pipeline state object parameter.
+	m_CommandList = std::make_unique<CommandList>(m_Device->GetDevice(), m_CommandAllocator->GetAllocator(), D3D12_COMMAND_LIST_TYPE_DIRECT, 0);
+
+	//Start off in a closed state.
+	//This is because the first time we refer to the command list we will reset it, 
+	//and it needs to be closed before calling Reset.
+	m_CommandList->Close();
+
+	return S_OK;
 }
