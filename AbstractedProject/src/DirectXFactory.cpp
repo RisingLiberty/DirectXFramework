@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "Utils.h"
 #include "DirectXFactory.h"
 
 DirectXFactory::DirectXFactory()

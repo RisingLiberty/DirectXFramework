@@ -1,8 +1,6 @@
 #include "stdafx.h"
 #include "Device.h"
 
-#include "Utils.h"
-
 #include "Adapter.h"
 
 Device::Device(Adapter* pAdapter)

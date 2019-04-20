@@ -3,8 +3,6 @@
 #include "Adapter.h"
 #include "Output.h"
 
-#include "Utils.h"
-
 Window::Window(int width, int height, const std::wstring& name, IDXGIFactory1* pFactory) :
 	m_Width(width),
 	m_Height(height),
