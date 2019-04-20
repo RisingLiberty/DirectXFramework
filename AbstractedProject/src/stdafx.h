@@ -64,5 +64,6 @@
 #include <unordered_map>
 
 #include "Exceptions.h"
+#include "Throws.h"
 
 using Microsoft::WRL::ComPtr;
