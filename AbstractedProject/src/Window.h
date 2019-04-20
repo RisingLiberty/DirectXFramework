@@ -1,5 +1,8 @@
 #pragma once
 
+class Adapter;
+class Output;
+
 class Window
 {
 public:
@@ -10,8 +13,8 @@ public:
 	void Show();
 
 	bool IsPaused() const;
-	const std::vector<ComPtr<IDXGIAdapter1>>& GetAdapters() const;
-	const std::vector<ComPtr<IDXGIOutput>>& GetOutputs() const;
+	const std::vector<std::unique_ptr<Adapter>>& GetAdapters() const;
+	const std::vector<std::unique_ptr<Output>>& GetOutputs() const;
 
 private:
 	static LRESULT CALLBACK WindowProcdureStatic(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
@@ -32,6 +35,7 @@ private:
 	WNDCLASS m_WndClass;
 	bool m_IsPaused;
 
-	std::vector<ComPtr<IDXGIAdapter1>> m_Adapters;
-	std::vector<ComPtr<IDXGIOutput>> m_Outputs;
+	std::vector<std::unique_ptr<Adapter>> m_Adapters;
+	std::vector<std::unique_ptr<Output>> m_Outputs;
+	//std::vector<ComPtr<IDXGIOutput>> m_Outputs;
 };

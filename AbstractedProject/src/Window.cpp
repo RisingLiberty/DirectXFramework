@@ -1,5 +1,7 @@
 #include "stdafx.h"
 #include "Window.h"
+#include "Adapter.h"
+#include "Output.h"
 
 #include "Utils.h"
 
@@ -48,12 +50,12 @@ bool Window::IsPaused() const
 	return m_IsPaused;
 }
 
-const std::vector<Microsoft::WRL::ComPtr<IDXGIAdapter1>>& Window::GetAdapters() const
+const std::vector<std::unique_ptr<Adapter>>& Window::GetAdapters() const
 {
 	return m_Adapters;
 }
 
-const std::vector<Microsoft::WRL::ComPtr<IDXGIOutput>>& Window::GetOutputs() const
+const std::vector<std::unique_ptr<Output>>& Window::GetOutputs() const
 {
 	return m_Outputs;
 }
@@ -111,13 +113,7 @@ HRESULT Window::InitializeAdapters(IDXGIFactory1* pFactory)
 	ComPtr<IDXGIAdapter1> pAdapter = nullptr;
 
 	while (pFactory->EnumAdapters1(adapterNr++, pAdapter.GetAddressOf()) != DXGI_ERROR_NOT_FOUND)
-	{
-		DXGI_ADAPTER_DESC1 desc;
-		pAdapter->GetDesc1(&desc);
-
-		//std::wcout << L"Adapter: " << desc.Description << L"\n";
-		m_Adapters.emplace_back(pAdapter);
-	}
+		m_Adapters.emplace_back(std::make_unique<Adapter>(pAdapter.Get()));
 
 	return S_OK;
 
@@ -125,22 +121,19 @@ HRESULT Window::InitializeAdapters(IDXGIFactory1* pFactory)
 
 HRESULT Window::InitializeOutputs()
 {
-	for (ComPtr<IDXGIAdapter1> pAdapter : m_Adapters)
+	for (const std::unique_ptr<Adapter>& pAdapter : m_Adapters)
 	{
 		//enum outputs
 		int outputNr = 0;
 		ComPtr<IDXGIOutput> pTempOutput;
 
-		while (pAdapter->EnumOutputs(outputNr++, pTempOutput.GetAddressOf()) != DXGI_ERROR_NOT_FOUND)
+		while (pAdapter->GetAdapter()->EnumOutputs(outputNr++, pTempOutput.GetAddressOf()) != DXGI_ERROR_NOT_FOUND)
 		{
 			IDXGIOutput* pOutput;
 			ThrowIfFailedDefault(pTempOutput->QueryInterface(IID_PPV_ARGS(&pOutput)));
 
-			DXGI_OUTPUT_DESC desc;
-			pOutput->GetDesc(&desc);
-
 			//std::wcout << L"Output: " << desc.DeviceName << L"\n";
-			m_Outputs.emplace_back(pOutput);
+			m_Outputs.emplace_back(std::make_unique<Output>(pOutput));
 		}
 	}
 
@@ -149,28 +142,8 @@ HRESULT Window::InitializeOutputs()
 
 HRESULT Window::InitializeDisplays()
 {
-	for (ComPtr<IDXGIOutput> pOutput : m_Outputs)
-	{
-		const DXGI_FORMAT format = DXGI_FORMAT_R8G8B8A8_UNORM;
-		UINT count = 0;
-		UINT flags = 0;
-
-		//call with nullptr to get list count.
-		pOutput->GetDisplayModeList(format, flags, &count, nullptr);
-
-		std::vector<DXGI_MODE_DESC> modeList(count);
-		pOutput->GetDisplayModeList(format, flags, &count, modeList.data());
-
-		for (DXGI_MODE_DESC& mode : modeList)
-		{
-			UINT n = mode.RefreshRate.Numerator;
-			UINT d = mode.RefreshRate.Denominator;
-
-			//std::wcout << L"Width = " << mode.Width << L"\n";
-			//std::wcout << L"Height = " << mode.Height << L"\n";
-			//std::wcout << L"Refresh = " << n << L"/" << d << L" = " << (float)n / d << L"\n";
-		}
-	}
+	for (const std::unique_ptr<Output>& pOutput : m_Outputs)
+		pOutput->SetDefaultDisplayModes(DXGI_FORMAT_R8G8B8A8_UNORM);
 
 	return S_OK;
 }
@@ -198,7 +171,7 @@ HRESULT Window::Configure()
 {
 	//Create window
 	DXGI_OUTPUT_DESC outputDesc;
-	ThrowIfFailedWindow(m_Outputs.front()->GetDesc(&outputDesc));
+	ThrowIfFailedWindow(m_Outputs.front()->GetOutput()->GetDesc(&outputDesc));
 
 	RECT r = { 0,0, m_Width, m_Height };
 	AdjustWindowRect(&r, WS_OVERLAPPED, false);
