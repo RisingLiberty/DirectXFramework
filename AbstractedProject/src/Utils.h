@@ -26,4 +26,10 @@ inline std::wstring AnsiToWString(const std::string& str)
     if(FAILED(_hr_)) { ThrowIfFailed(x, WindowException); } \
 }
 
+#define ThrowIfFailedDevice(x)\
+{\
+    HRESULT _hr_ = (x);\
+    if(FAILED(_hr_)) { ThrowIfFailed(x, DeviceException); } \
+}
+
 #endif
