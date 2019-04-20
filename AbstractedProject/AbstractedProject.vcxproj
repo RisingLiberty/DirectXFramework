@@ -127,6 +127,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\Adapter.cpp" />
+    <ClCompile Include="src\CommandAllocator.cpp" />
+    <ClCompile Include="src\CommandList.cpp" />
+    <ClCompile Include="src\CommandQueue.cpp" />
     <ClCompile Include="src\Device.cpp" />
     <ClCompile Include="src\DirectXFactory.cpp" />
     <ClCompile Include="src\DisplayMode.cpp" />
@@ -139,11 +142,15 @@
     <ClCompile Include="src\stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="src\Throws.cpp" />
     <ClCompile Include="src\Utils.cpp" />
     <ClCompile Include="src\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Adapter.h" />
+    <ClInclude Include="src\CommandAllocator.h" />
+    <ClInclude Include="src\CommandList.h" />
+    <ClInclude Include="src\CommandQueue.h" />
     <ClInclude Include="src\Device.h" />
     <ClInclude Include="src\DirectXApp.h" />
     <ClInclude Include="src\DirectXFactory.h" />
@@ -153,6 +160,7 @@
     <ClInclude Include="src\GameTimer.h" />
     <ClInclude Include="src\Output.h" />
     <ClInclude Include="src\stdafx.h" />
+    <ClInclude Include="src\Throws.h" />
     <ClInclude Include="src\Utils.h" />
     <ClInclude Include="src\Window.h" />
   </ItemGroup>
