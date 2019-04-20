@@ -7,7 +7,8 @@ Window::Window(int width, int height, const std::wstring& name, IDXGIFactory1* p
 	m_Width(width),
 	m_Height(height),
 	m_Name(name),
-	m_WndClass({})
+	m_WndClass({}),
+	m_IsPaused(false)
 {
 	this->InitializeAdapters(pFactory);
 	this->InitializeOutputs();
@@ -21,9 +22,40 @@ Window::~Window()
 
 }
 
+UINT Window::EventLoop()
+{
+	MSG message = { 0 };
+
+	while (PeekMessage(&message, 0, 0, 0, PM_REMOVE))
+	{
+		TranslateMessage(&message);
+		DispatchMessage(&message);
+
+		if (message.message == WM_QUIT)
+			return message.message;
+	}
+
+	return message.message;
+}
+
 void Window::Show()
 {
 	ShowWindow(m_WindowHandle, SW_SHOWDEFAULT);
+}
+
+bool Window::IsPaused() const
+{
+	return m_IsPaused;
+}
+
+const std::vector<Microsoft::WRL::ComPtr<IDXGIAdapter1>>& Window::GetAdapters() const
+{
+	return m_Adapters;
+}
+
+const std::vector<Microsoft::WRL::ComPtr<IDXGIOutput>>& Window::GetOutputs() const
+{
+	return m_Outputs;
 }
 
 LRESULT Window::WindowProcdureStatic(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -51,12 +83,12 @@ LRESULT Window::HandleEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPara
 	case WM_DESTROY:
 		PostQuitMessage(0);
 		return 0;
-	//case WM_ACTIVATE:
-	//	if (wParam == WA_ACTIVE || wParam == WA_CLICKACTIVE)
-	//		m_IsPaused = false;
-	//	else
-	//		m_IsPaused = true;
-	//	return 0;
+	case WM_ACTIVATE:
+		if (wParam == WA_ACTIVE || wParam == WA_CLICKACTIVE)
+			m_IsPaused = false;
+		else
+			m_IsPaused = true;
+		return 0;
 	//case WM_RBUTTONDOWN:
 	//	OnMouseDown(wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 	//	return 0;
