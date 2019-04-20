@@ -27,3 +27,4 @@ public:\
 
 DeclareException(DefaultException);
 DeclareException(WindowException);
+DeclareException(DeviceException);

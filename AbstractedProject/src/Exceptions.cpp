@@ -60,3 +60,4 @@ std::wstring className::ToString() const\
 
 CreateException(DefaultException, "Default exception");
 CreateException(WindowException, "Window exception");
+CreateException(DeviceException, "Device exception");
