@@ -1,13 +1,17 @@
 #pragma once
 
+class Adapter;
+
 class Device
 {
 public:
-	Device(IDXGIAdapter* pAdapter);
+	Device(Adapter* pAdapter);
 	~Device();
 
 	ID3D12Device* GetDevice() const;
 	ID3D12Device* const* GetDeviceAddress() const;
+
+	HRESULT CheckFeatureSupport(D3D12_FEATURE feature, void* featureSupportData, unsigned int size);
 
 	UINT GetRenderTargetViewSize() const;
 	UINT GetDepthStencilViewSize() const;
