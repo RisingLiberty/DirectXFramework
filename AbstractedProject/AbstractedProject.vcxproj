@@ -126,8 +126,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Device.cpp" />
     <ClCompile Include="src\DirectXFactory.cpp" />
     <ClCompile Include="src\Exceptions.cpp" />
+    <ClCompile Include="src\Fence.cpp" />
     <ClCompile Include="src\GameTimer.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\DirectXApp.cpp" />
@@ -138,9 +140,11 @@
     <ClCompile Include="src\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Device.h" />
     <ClInclude Include="src\DirectXApp.h" />
     <ClInclude Include="src\DirectXFactory.h" />
     <ClInclude Include="src\Exceptions.h" />
+    <ClInclude Include="src\Fence.h" />
     <ClInclude Include="src\GameTimer.h" />
     <ClInclude Include="src\stdafx.h" />
     <ClInclude Include="src\Utils.h" />
