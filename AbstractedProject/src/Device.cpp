@@ -57,7 +57,7 @@ void Device::CreateDescriptorHeap(const DescriptorHeapDesc& desc, ID3D12Descript
 
 void Device::CreateResource(const CoreResourceDesc& desc, ID3D12Resource** ppResource) const
 {
-	ThrowIfFailedDevice(m_Device->CreateCommittedResource(&desc.Props, desc.Flags, &desc.Desc, desc.States, &desc.ClearValue, IID_PPV_ARGS(ppResource)));
+	ThrowIfFailedDevice(m_Device->CreateCommittedResource(&desc.Props, desc.Flags, &desc.Desc, desc.States, desc.ClearValue, IID_PPV_ARGS(ppResource)));
 }
 
 void Device::CreateRenderTargetView(Buffer2D *pBuffer, D3D12_CPU_DESCRIPTOR_HANDLE destDescriptor, const D3D12_RENDER_TARGET_VIEW_DESC *pDesc) const
@@ -73,7 +73,6 @@ void Device::CreateDepthStencilView(Buffer2D* pBuffer, D3D12_CPU_DESCRIPTOR_HAND
 UINT Device::GetRenderTargetViewSize() const
 {
 	return m_Device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-
 }
 
 UINT Device::GetDepthStencilViewSize() const
