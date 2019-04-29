@@ -15,11 +15,11 @@ struct CoreResourceDesc
 
 class Device;
 
-class Texture
+class Buffer2D
 {
 public:
-	Texture(const ResourceDesc& desc);
-	~Texture();
+	Buffer2D(const ResourceDesc& desc);
+	~Buffer2D();
 
 	void Reset(Device* pDevice);
 
@@ -32,4 +32,4 @@ private:
 	ComPtr<ID3D12Resource> m_Resource;
 };
 
-using Buffer2D = Texture;
+using Texture = Buffer2D;

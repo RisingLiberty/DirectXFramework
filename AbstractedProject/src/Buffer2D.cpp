@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "Texture.h"
+#include "Buffer2D.h"
 
 #include "Device.h"
 
@@ -11,18 +11,18 @@ CoreResourceDesc::CoreResourceDesc():
 
 }
 
-Texture::Texture(const ResourceDesc& desc):
+Buffer2D::Buffer2D(const ResourceDesc& desc):
 	m_Desc(desc)
 {
 
 }
 
-Texture::~Texture()
+Buffer2D::~Buffer2D()
 {
 
 }
 
-void Texture::Reset(Device* pDevice)
+void Buffer2D::Reset(Device* pDevice)
 {
 	m_Resource.Reset();
 
@@ -51,17 +51,17 @@ void Texture::Reset(Device* pDevice)
 	pDevice->CreateResource(coreDesc, m_Resource.ReleaseAndGetAddressOf());
 }
 
-ID3D12Resource* Texture::GetResource() const
+ID3D12Resource* Buffer2D::GetResource() const
 {
 	return m_Resource.Get();
 }
 
-ID3D12Resource* const* Texture::GetResourceAddress() const
+ID3D12Resource* const* Buffer2D::GetResourceAddress() const
 {
 	return m_Resource.GetAddressOf();
 }
 
-ID3D12Resource** Texture::GetResourceAddress()
+ID3D12Resource** Buffer2D::GetResourceAddress()
 {
 	return m_Resource.GetAddressOf();
 }
