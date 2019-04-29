@@ -3,6 +3,7 @@
 #include "Fence.h"
 
 class Device;
+class CommandList;
 
 class CommandQueue
 {
@@ -11,10 +12,10 @@ public:
 	~CommandQueue();
 
 	void Flush();
+	void ExecuteCommandLists(CommandList* pCommandList);
 
 	ID3D12CommandQueue* GetCommandQueue() const;
 	ID3D12CommandQueue* const* GetCommandQueueAddress() const;
-
 
 private:
 	ComPtr<ID3D12CommandQueue> m_CommandQueue;
