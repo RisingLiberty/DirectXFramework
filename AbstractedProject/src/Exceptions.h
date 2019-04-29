@@ -28,3 +28,5 @@ public:\
 DeclareException(DefaultException);
 DeclareException(WindowException);
 DeclareException(DeviceException);
+DeclareException(CommandQueueException);
+DeclareException(SwapChainException);
