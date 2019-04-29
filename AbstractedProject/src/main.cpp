@@ -3,6 +3,10 @@
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int showCmd)
 {
+	UNREFERENCED_PARAMETER(hPrevInstance);
+	UNREFERENCED_PARAMETER(lpCmdLine);
+	UNREFERENCED_PARAMETER(showCmd);
+
 	//Notify user if heap is corrupt
 	HeapSetInformation(NULL, HeapEnableTerminationOnCorruption, NULL, 0);
 
