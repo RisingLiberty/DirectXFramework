@@ -127,9 +127,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\Adapter.cpp" />
+    <ClCompile Include="src\Camera.cpp" />
     <ClCompile Include="src\CommandAllocator.cpp" />
     <ClCompile Include="src\CommandList.cpp" />
     <ClCompile Include="src\CommandQueue.cpp" />
+    <ClCompile Include="src\ConstantBuffers.cpp" />
     <ClCompile Include="src\DescriptorHeap.cpp" />
     <ClCompile Include="src\Device.cpp" />
     <ClCompile Include="src\DirectXFactory.cpp" />
@@ -137,25 +139,31 @@
     <ClCompile Include="src\Event.cpp" />
     <ClCompile Include="src\Exceptions.cpp" />
     <ClCompile Include="src\Fence.cpp" />
+    <ClCompile Include="src\FrameResource.cpp" />
     <ClCompile Include="src\GameTimer.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\DirectXApp.cpp" />
+    <ClCompile Include="src\MathHelper.cpp" />
     <ClCompile Include="src\Output.cpp" />
+    <ClCompile Include="src\RootSignature.cpp" />
     <ClCompile Include="src\stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\SwapChain.cpp" />
     <ClCompile Include="src\Buffer2D.cpp" />
     <ClCompile Include="src\Throws.cpp" />
+    <ClCompile Include="src\UploadBuffer.cpp" />
     <ClCompile Include="src\Utils.cpp" />
     <ClCompile Include="src\Window.cpp" />
     <ClCompile Include="src\WindowEvents.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Adapter.h" />
+    <ClInclude Include="src\Camera.h" />
     <ClInclude Include="src\CommandAllocator.h" />
     <ClInclude Include="src\CommandList.h" />
     <ClInclude Include="src\CommandQueue.h" />
+    <ClInclude Include="src\ConstantBuffers.h" />
     <ClInclude Include="src\DescriptorHeap.h" />
     <ClInclude Include="src\Device.h" />
     <ClInclude Include="src\DirectXApp.h" />
@@ -164,12 +172,16 @@
     <ClInclude Include="src\Event.h" />
     <ClInclude Include="src\Exceptions.h" />
     <ClInclude Include="src\Fence.h" />
+    <ClInclude Include="src\FrameResource.h" />
     <ClInclude Include="src\GameTimer.h" />
+    <ClInclude Include="src\MathHelper.h" />
     <ClInclude Include="src\Output.h" />
+    <ClInclude Include="src\RootSignature.h" />
     <ClInclude Include="src\stdafx.h" />
     <ClInclude Include="src\SwapChain.h" />
     <ClInclude Include="src\Buffer2D.h" />
     <ClInclude Include="src\Throws.h" />
+    <ClInclude Include="src\UploadBuffer.h" />
     <ClInclude Include="src\Utils.h" />
     <ClInclude Include="src\Window.h" />
     <ClInclude Include="src\WindowEvents.h" />
