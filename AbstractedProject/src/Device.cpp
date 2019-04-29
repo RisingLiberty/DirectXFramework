@@ -62,7 +62,7 @@ void Device::CreateResource(const CoreResourceDesc& desc, ID3D12Resource** ppRes
 
 void Device::CreateDepthStencilView(ID3D12Resource* pResource, D3D12_CPU_DESCRIPTOR_HANDLE DestDescriptor, const D3D12_DEPTH_STENCIL_VIEW_DESC* pDesc) const
 {
-	ThrowIfFailedDevice(m_Device->CreateDepthStencilView(pResource, pDesc, DestDescriptor));
+	m_Device->CreateDepthStencilView(pResource, pDesc, DestDescriptor);
 }
 
 UINT Device::GetRenderTargetViewSize() const
