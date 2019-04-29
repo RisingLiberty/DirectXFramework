@@ -3,7 +3,18 @@
 #include "Adapter.h"
 #include "Output.h"
 
-Window::Window(int width, int height, const std::wstring& name, IDXGIFactory1* pFactory) :
+#include "WindowEvents.h"
+
+namespace
+{
+	template <typename T>
+	T ConvertEvent(Event& event)
+	{
+		return *(dynamic_cast<T*>(&event));
+	}
+}
+
+Window::Window(unsigned int width, unsigned int height, const std::wstring& name, IDXGIFactory1* pFactory) :
 	m_Width(width),
 	m_Height(height),
 	m_Name(name),
@@ -43,6 +54,60 @@ void Window::Show()
 	ShowWindow(m_WindowHandle, SW_SHOWDEFAULT);
 }
 
+bool Window::OnEvent(Event& e)
+{
+	WindowEvent event = *(dynamic_cast<WindowEvent*>(&e));
+
+	switch (event.GetType())
+	{
+	case WindowEventType::RESIZE:
+	{
+		WindowResizeEvent resizeEvent = ConvertEvent<WindowResizeEvent>(e);
+		return this->OnResize(resizeEvent.Width, resizeEvent.Height);
+	}
+	case WindowEventType::KEY_UP:
+	{
+
+		break;
+	}
+	case WindowEventType::KEY_DOWN:
+	{
+
+		break;
+	}
+	case WindowEventType::ACTIVATE:
+	{
+		WindowActivateEvent activateEvent = ConvertEvent<WindowActivateEvent>(e);
+		if (activateEvent.IsActive)
+			return this->OnActivate();
+		else
+			return this->OnDeactivate();
+	}
+	case WindowEventType::DESTROY:
+	{
+
+		break;
+	}
+	case WindowEventType::MOUSE_DOWN:
+	{
+
+		break;
+	}
+	case WindowEventType::MOUSE_UP:
+	{
+
+		break;
+	}
+	case WindowEventType::MOUSE_MOVE:
+	{
+
+		break;
+	}
+	}
+	
+	return true;
+}
+
 bool Window::IsPaused() const
 {
 	return m_IsPaused;
@@ -58,7 +123,27 @@ const std::vector<std::unique_ptr<Output>>& Window::GetOutputs() const
 	return m_Outputs;
 }
 
-LRESULT Window::WindowProcdureStatic(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
+unsigned int Window::GetWidth() const
+{
+	return m_Width;
+}
+
+unsigned int Window::GetHeight() const
+{
+	return m_Height;
+}
+
+HWND Window::GetHandle() const
+{
+	return m_WindowHandle;
+}
+
+void Window::SetEventHandlerFn(const EventHandlerFn& callback)
+{
+	m_EventHandlerFn = callback;
+}
+
+LRESULT Window::WindowProcedureStatic(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	if (message == WM_CREATE)
 	{
@@ -81,14 +166,18 @@ LRESULT Window::HandleEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPara
 	{
 		//Is sent when the window is being destroyed
 	case WM_DESTROY:
-		PostQuitMessage(0);
+	{
+		WindowDestroyEvent event;
+		m_EventHandlerFn(event);
+		//PostQuitMessage(0);
 		return 0;
+	}
 	case WM_ACTIVATE:
-		if (wParam == WA_ACTIVE || wParam == WA_CLICKACTIVE)
-			m_IsPaused = false;
-		else
-			m_IsPaused = true;
+	{
+		WindowActivateEvent event(wParam == WM_ACTIVATE || wParam == WA_CLICKACTIVE);
+		m_EventHandlerFn(event);
 		return 0;
+	}
 	//case WM_RBUTTONDOWN:
 	//	OnMouseDown(wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 	//	return 0;
@@ -152,7 +241,7 @@ HRESULT Window::InitializeWndClass()
 	m_WndClass.hIcon = nullptr;
 	m_WndClass.hbrBackground = nullptr;
 	m_WndClass.style = CS_HREDRAW | CS_VREDRAW;
-	m_WndClass.lpfnWndProc = WindowProcdureStatic;
+	m_WndClass.lpfnWndProc = WindowProcedureStatic;
 	m_WndClass.hInstance = m_hInstance;
 	m_WndClass.lpszClassName = m_Name.c_str();
 
@@ -171,13 +260,10 @@ HRESULT Window::Configure()
 	DXGI_OUTPUT_DESC outputDesc;
 	ThrowIfFailedWindow(m_Outputs.front()->GetOutput()->GetDesc(&outputDesc));
 
-	RECT r = { 0,0, m_Width, m_Height };
+	RECT r = { 0l,0l, (long)m_Width, (long)m_Height };
 	AdjustWindowRect(&r, WS_OVERLAPPED, false);
 	int winWidth = r.right - r.left;
 	int winHeight = r.bottom - r.top;
-
-	int x = outputDesc.DesktopCoordinates.left + ((outputDesc.DesktopCoordinates.right - outputDesc.DesktopCoordinates.left));
-	int y = (int)((outputDesc.DesktopCoordinates.bottom - outputDesc.DesktopCoordinates.top) * 0.5f - winHeight * 0.5f);
 
 	m_WindowHandle = CreateWindowExW(
 		0L,
@@ -202,4 +288,25 @@ HRESULT Window::Configure()
 
 	this->Show();
 	return S_OK;
+}
+
+bool Window::OnResize(int width, int height)
+{
+	m_Width = width;
+	m_Height = height;
+
+	// return false so direct x can adjust the swapchain
+	return false;
+}
+
+bool Window::OnActivate()
+{
+	m_IsPaused = false;
+	return true;
+}
+
+bool Window::OnDeactivate()
+{
+	m_IsPaused = true;
+	return true;
 }
