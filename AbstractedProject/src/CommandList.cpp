@@ -15,14 +15,14 @@ CommandList::~CommandList()
 {
 }
 
-HRESULT CommandList::Reset(ID3D12PipelineState* pInitialState)
+void CommandList::Reset(ID3D12PipelineState* pInitialState)
 {
-	return m_CommandList->Reset(m_Allocator->GetAllocator(), pInitialState);
+	ThrowIfFailedCommandList(m_CommandList->Reset(m_Allocator->GetAllocator(), pInitialState));
 }
 
-HRESULT CommandList::Close()
+void CommandList::Close()
 {
-	return m_CommandList->Close();
+	ThrowIfFailedCommandList(m_CommandList->Close());
 }
 
 ID3D12GraphicsCommandList * CommandList::GetCommandList() const
@@ -34,3 +34,9 @@ ID3D12GraphicsCommandList * const * CommandList::GetCommandListAddress() const
 {
 	return m_CommandList.GetAddressOf();
 }
+
+void CommandList::TransitResourceToWrite(ID3D12Resource* pResource) const
+{
+	m_CommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(pResource, D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_DEPTH_WRITE));
+}
+

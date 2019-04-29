@@ -9,11 +9,13 @@ public:
 	CommandList(Device* pDevice, const D3D12_COMMAND_LIST_TYPE& type, unsigned int nodeMask = 0);
 	~CommandList();
 
-	HRESULT Reset(ID3D12PipelineState* pInitialState = nullptr);
-	HRESULT Close();
+	void Reset(ID3D12PipelineState* pInitialState = nullptr);
+	void Close();
 
 	ID3D12GraphicsCommandList* GetCommandList() const;
 	ID3D12GraphicsCommandList* const* GetCommandListAddress() const;
+
+	void TransitResourceToWrite(ID3D12Resource* pResource) const;
 
 private:
 	ComPtr<ID3D12GraphicsCommandList> m_CommandList;
