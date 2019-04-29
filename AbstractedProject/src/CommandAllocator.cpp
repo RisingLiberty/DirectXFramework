@@ -1,9 +1,11 @@
 #include "stdafx.h"
 #include "CommandAllocator.h"
 
-CommandAllocator::CommandAllocator(ID3D12Device * pDevice, const D3D12_COMMAND_LIST_TYPE & type)
+#include "Device.h"
+
+CommandAllocator::CommandAllocator(Device* pDevice, const D3D12_COMMAND_LIST_TYPE& type)
 {
-	ThrowIfFailedDevice(pDevice->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(m_CommandAllocator.ReleaseAndGetAddressOf())));
+	pDevice->CreateCommandAllocator(type, m_CommandAllocator.ReleaseAndGetAddressOf());
 }
 
 CommandAllocator::~CommandAllocator()

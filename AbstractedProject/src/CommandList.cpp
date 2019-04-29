@@ -1,13 +1,23 @@
 #include "stdafx.h"
 #include "CommandList.h"
+#include "CommandAllocator.h"
 
-CommandList::CommandList(ID3D12Device* pDevice, ID3D12CommandAllocator* pAllocator, const D3D12_COMMAND_LIST_TYPE & type, unsigned int nodeMask)
+#include "Device.h"
+
+CommandList::CommandList(Device* pDevice, const D3D12_COMMAND_LIST_TYPE & type, unsigned int nodeMask)
 {
-	ThrowIfFailedDevice(pDevice->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, pAllocator, nullptr, IID_PPV_ARGS(m_CommandList.ReleaseAndGetAddressOf())));
+	m_Allocator = std::make_unique<CommandAllocator>(pDevice, type);
+
+	pDevice->CreateCommandList(nodeMask, type, m_Allocator.get(), m_CommandList.ReleaseAndGetAddressOf());
 }
 
 CommandList::~CommandList()
 {
+}
+
+HRESULT CommandList::Reset(ID3D12PipelineState* pInitialState)
+{
+	return m_CommandList->Reset(m_Allocator->GetAllocator(), pInitialState);
 }
 
 HRESULT CommandList::Close()

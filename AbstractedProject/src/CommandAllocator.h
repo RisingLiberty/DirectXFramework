@@ -1,9 +1,11 @@
 #pragma once
 
+class Device;
+
 class CommandAllocator
 {
 public:
-	CommandAllocator(ID3D12Device* pDevice, const D3D12_COMMAND_LIST_TYPE& type);
+	CommandAllocator(Device* pDevice, const D3D12_COMMAND_LIST_TYPE& type = D3D12_COMMAND_LIST_TYPE_DIRECT);
 	~CommandAllocator();
 
 	ID3D12CommandAllocator* GetAllocator() const;
