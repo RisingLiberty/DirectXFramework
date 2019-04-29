@@ -16,20 +16,27 @@ inline std::wstring AnsiToWString(const std::string& str)
 
 #define ThrowIfFailedDefault(x)\
 {\
-    HRESULT _hr_ = (x);\
-    if(FAILED(_hr_)) { ThrowIfFailed(x, Exception); } \
+	ThrowIfFailed(x, Exception);\
 }
 
 #define ThrowIfFailedWindow(x)\
 {\
-    HRESULT _hr_ = (x);\
-    if(FAILED(_hr_)) { ThrowIfFailed(x, WindowException); } \
+    ThrowIfFailed(x, WindowException);\
 }
 
 #define ThrowIfFailedDevice(x)\
 {\
-    HRESULT _hr_ = (x);\
-    if(FAILED(_hr_)) { ThrowIfFailed(x, DeviceException); } \
+	ThrowIfFailed(x, DeviceException);\
+}
+
+#define ThrowIfFailedCommandQueue(x)\
+{\
+	ThrowIfFailed(x, CommandQueueException);\
+}
+
+#define ThrowIfFailedSwapChain(x)\
+{\
+	ThrowIfFailed(x, SwapChainException);\
 }
 
 #endif
