@@ -2,6 +2,7 @@
 
 class CommandAllocator;
 class Device;
+class Buffer2D;
 
 class CommandList
 {
@@ -15,7 +16,7 @@ public:
 	ID3D12GraphicsCommandList* GetCommandList() const;
 	ID3D12GraphicsCommandList* const* GetCommandListAddress() const;
 
-	void TransitResourceToWrite(ID3D12Resource* pResource) const;
+	void TransitResourceToWrite(Buffer2D* pResource) const;
 
 private:
 	ComPtr<ID3D12GraphicsCommandList> m_CommandList;

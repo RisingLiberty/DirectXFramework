@@ -2,7 +2,7 @@
 #include "SwapChain.h"
 
 #include "Window.h"
-#include "Texture.h"
+#include "Buffer2D.h"
 #include "DescriptorHeap.h"
 #include "Device.h"
 
@@ -47,6 +47,13 @@ void SwapChain::Swap()
 	m_SwapChain->Present(1, 0);
 }
 
+void SwapChain::Reset(Device* pDevice, unsigned int newWidth, unsigned int newHeight)
+{
+	this->ResetBuffers();
+	this->ResizeBuffers(newWidth, newHeight);
+	this->ResetHeap(pDevice);
+}
+
 void SwapChain::ResetBuffers()
 {
 	for (int i = 0; i < BUFFER_COUNT; ++i)
@@ -55,7 +62,7 @@ void SwapChain::ResetBuffers()
 	m_CurrentBackBuffer = 0;
 }
 
-void SwapChain::ResetHeap(ID3D12Device* pDevice)
+void SwapChain::ResetHeap(Device* pDevice)
 {
 	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHeapHandle(m_RtvHeap->GetCPUDescriptorHandle());
 	for (UINT i = 0; i < BUFFER_COUNT; ++i)
@@ -64,7 +71,7 @@ void SwapChain::ResetHeap(ID3D12Device* pDevice)
 		ThrowIfFailedSwapChain(m_SwapChain->GetBuffer(i, IID_PPV_ARGS(m_SwapChainBuffers[i]->GetResourceAddress())));
 
 		//Create RTV to it
-		pDevice->CreateRenderTargetView(m_SwapChainBuffers[i]->GetResource(), nullptr, rtvHeapHandle);
+		pDevice->CreateRenderTargetView(m_SwapChainBuffers[i].get(), rtvHeapHandle);
 
 		//Next entry in heap
 		rtvHeapHandle.Offset(1, m_RtvDescriptorSize);

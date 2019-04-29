@@ -31,3 +31,4 @@ DeclareException(DeviceException);
 DeclareException(CommandQueueException);
 DeclareException(SwapChainException);
 DeclareException(CommandListException);
+DeclareException(UploadBufferException);

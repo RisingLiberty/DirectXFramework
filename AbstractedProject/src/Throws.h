@@ -43,4 +43,9 @@ inline std::wstring AnsiToWString(const std::string& str)
 {\
 	ThrowIfFailed(x, CommandListException);\
 }
+
+#define ThrowIfFailedUploadBuffer(x)\
+{\
+	ThrowIfFailed(x, UploadBufferException); \
+}
 #endif

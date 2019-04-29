@@ -60,3 +60,9 @@ ID3D12CommandQueue * const * CommandQueue::GetCommandQueueAddress() const
 {
 	return m_CommandQueue.GetAddressOf();
 }
+
+void CommandQueue::ExecuteCommandList(CommandList* pCommandList) const
+{
+	ID3D12CommandList* pCmdList = pCommandList->GetCommandList();
+	m_CommandQueue->ExecuteCommandLists(1, &pCmdList);
+}

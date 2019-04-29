@@ -10,26 +10,26 @@ struct CoreResourceDesc
 	D3D12_HEAP_FLAGS Flags;
 	D3D12_RESOURCE_DESC Desc;
 	D3D12_RESOURCE_STATES States;
-	D3D12_CLEAR_VALUE ClearValue;
+	D3D12_CLEAR_VALUE* ClearValue;
 };
 
 class Device;
 
-class Texture
+class Buffer2D
 {
 public:
-	Texture(const ResourceDesc& desc);
-	~Texture();
+	Buffer2D(const DXGI_FORMAT& format);
+	~Buffer2D();
 
-	void Reset(Device* pDevice);
-
+	void Reset(Device* pDevice, unsigned int newWidth, unsigned int newHeight);
+	
+	DXGI_FORMAT m_Format;
 	ID3D12Resource* GetResource() const;
 	ID3D12Resource* const* GetResourceAddress() const;
 	ID3D12Resource** GetResourceAddress();
 
 private:
-	ResourceDesc m_Desc;
 	ComPtr<ID3D12Resource> m_Resource;
 };
 
-using Buffer2D = Texture;
+using Texture = Buffer2D;
