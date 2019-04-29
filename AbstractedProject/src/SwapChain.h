@@ -5,8 +5,7 @@ class DirectXFactory;
 class CommandQueue;
 class DescriptorHeap;
 class Device;
-
-#include "Texture.h"
+class Buffer2D;
 
 // For now the back buffer is as big as the window
 class SwapChain
@@ -17,7 +16,7 @@ public:
 
 	void Swap();
 	void ResetBuffers();
-	void ResetHeap(ID3D12Device* pDevice);
+	void ResetHeap(Device* pDevice);
 	void ResizeBuffers(unsigned int width, unsigned int height);
 
 	IDXGISwapChain* GetSwapChain() const;
