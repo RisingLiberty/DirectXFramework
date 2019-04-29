@@ -63,3 +63,4 @@ CreateException(WindowException, "Window exception");
 CreateException(DeviceException, "Device exception");
 CreateException(CommandQueueException, "Command Queue exception");
 CreateException(SwapChainException, "Swapchain exception");
+CreateException(CommandListException, "Command List Exception");
