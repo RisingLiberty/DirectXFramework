@@ -85,7 +85,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <WarningLevel>Level4</WarningLevel>
+      <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
@@ -130,11 +130,9 @@
     <ClCompile Include="src\CommandAllocator.cpp" />
     <ClCompile Include="src\CommandList.cpp" />
     <ClCompile Include="src\CommandQueue.cpp" />
-    <ClCompile Include="src\DescriptorHeap.cpp" />
     <ClCompile Include="src\Device.cpp" />
     <ClCompile Include="src\DirectXFactory.cpp" />
     <ClCompile Include="src\DisplayMode.cpp" />
-    <ClCompile Include="src\Event.cpp" />
     <ClCompile Include="src\Exceptions.cpp" />
     <ClCompile Include="src\Fence.cpp" />
     <ClCompile Include="src\GameTimer.cpp" />
@@ -144,35 +142,27 @@
     <ClCompile Include="src\stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\SwapChain.cpp" />
-    <ClCompile Include="src\Texture.cpp" />
     <ClCompile Include="src\Throws.cpp" />
     <ClCompile Include="src\Utils.cpp" />
     <ClCompile Include="src\Window.cpp" />
-    <ClCompile Include="src\WindowEvents.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Adapter.h" />
     <ClInclude Include="src\CommandAllocator.h" />
     <ClInclude Include="src\CommandList.h" />
     <ClInclude Include="src\CommandQueue.h" />
-    <ClInclude Include="src\DescriptorHeap.h" />
     <ClInclude Include="src\Device.h" />
     <ClInclude Include="src\DirectXApp.h" />
     <ClInclude Include="src\DirectXFactory.h" />
     <ClInclude Include="src\DisplayMode.h" />
-    <ClInclude Include="src\Event.h" />
     <ClInclude Include="src\Exceptions.h" />
     <ClInclude Include="src\Fence.h" />
     <ClInclude Include="src\GameTimer.h" />
     <ClInclude Include="src\Output.h" />
     <ClInclude Include="src\stdafx.h" />
-    <ClInclude Include="src\SwapChain.h" />
-    <ClInclude Include="src\Texture.h" />
     <ClInclude Include="src\Throws.h" />
     <ClInclude Include="src\Utils.h" />
     <ClInclude Include="src\Window.h" />
-    <ClInclude Include="src\WindowEvents.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
