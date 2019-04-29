@@ -47,6 +47,13 @@ void SwapChain::Swap()
 	m_SwapChain->Present(1, 0);
 }
 
+void SwapChain::Reset(Device* pDevice, unsigned int newWidth, unsigned int newHeight)
+{
+	this->ResetBuffers();
+	this->ResizeBuffers(newWidth, newHeight);
+	this->ResetHeap(pDevice);
+}
+
 void SwapChain::ResetBuffers()
 {
 	for (int i = 0; i < BUFFER_COUNT; ++i)

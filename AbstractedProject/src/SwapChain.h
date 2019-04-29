@@ -15,6 +15,7 @@ public:
 	~SwapChain();
 
 	void Swap();
+	void Reset(Device* pDevice, unsigned int newWidth, unsigned int newHeight);
 	void ResetBuffers();
 	void ResetHeap(Device* pDevice);
 	void ResizeBuffers(unsigned int width, unsigned int height);
