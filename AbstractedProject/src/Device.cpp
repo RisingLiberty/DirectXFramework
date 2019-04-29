@@ -60,9 +60,14 @@ void Device::CreateResource(const CoreResourceDesc& desc, ID3D12Resource** ppRes
 	ThrowIfFailedDevice(m_Device->CreateCommittedResource(&desc.Props, desc.Flags, &desc.Desc, desc.States, &desc.ClearValue, IID_PPV_ARGS(ppResource)));
 }
 
-void Device::CreateDepthStencilView(ID3D12Resource* pResource, D3D12_CPU_DESCRIPTOR_HANDLE DestDescriptor, const D3D12_DEPTH_STENCIL_VIEW_DESC* pDesc) const
+void Device::CreateRenderTargetView(Buffer2D *pBuffer, D3D12_CPU_DESCRIPTOR_HANDLE destDescriptor, const D3D12_RENDER_TARGET_VIEW_DESC *pDesc) const
 {
-	ThrowIfFailedDevice(m_Device->CreateDepthStencilView(pResource, pDesc, DestDescriptor));
+	m_Device->CreateRenderTargetView(pBuffer->GetResource(), pDesc, destDescriptor);
+}
+
+void Device::CreateDepthStencilView(Buffer2D* pBuffer, D3D12_CPU_DESCRIPTOR_HANDLE destDescriptor, const D3D12_DEPTH_STENCIL_VIEW_DESC* pDesc) const
+{
+	m_Device->CreateDepthStencilView(pBuffer->GetResource(), pDesc, destDescriptor);
 }
 
 UINT Device::GetRenderTargetViewSize() const
