@@ -14,6 +14,7 @@
 //Windows Runtime Library. Needed for Microsoft::WRL::Microsoft::WRL::ComPtr<> template class
 //The Microsoft::WRL::ComPtr template class provides smart pointer functionality for COM objects.
 #include <wrl.h>
+using Microsoft::WRL::ComPtr;
 
 //Windows extended methods
 //#include <windowsx.h>
@@ -52,6 +53,7 @@
 //the d3dx12.h header is not included as part of the Windows 10 SDK and needs to be downloaded from here:
 //https://github.com/Microsoft/DirectX-Graphics-Samples/tree/master/Libraries/D3DX12
 #include <DirectX/d3dx12.h>
+using namespace DirectX;
 
 #include <initguid.h>
 #include <array>
@@ -63,8 +65,9 @@
 #include <map>
 #include <unordered_map>
 #include <functional>
+#include <math.h>
 
 #include "Exceptions.h"
 #include "Throws.h"
-
-using Microsoft::WRL::ComPtr;
+#include "MathHelper.h"
+#include "Utils.h"
