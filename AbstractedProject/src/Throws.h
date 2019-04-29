@@ -39,4 +39,8 @@ inline std::wstring AnsiToWString(const std::string& str)
 	ThrowIfFailed(x, SwapChainException);\
 }
 
+#define ThrowIfFailedCommandList(x)\
+{\
+	ThrowIfFailed(x, CommandListException);\
+}
 #endif
