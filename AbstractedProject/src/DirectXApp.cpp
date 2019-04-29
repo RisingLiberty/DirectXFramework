@@ -250,6 +250,14 @@ void DirectXApp::OnResize()
 	m_SwapChain->ResetHeap(m_Device->GetDevice());
 
 	m_DepthStencilBuffer->Reset(m_Device.get());
+
 	//Create descriptor to mip level 0 of entire resource using the format of the resource.
-	m_Device->CreateDepthStencilView(m_DepthStencilBuffer->GetResource(), nullptr, GetDepthStencilView());
+	m_Device->CreateDepthStencilView(m_DepthStencilBuffer->GetResource(), m_DsvHeap->GetCPUDescriptorHandle());
+
+	//Transition the resource from its initial state to be used as a depth buffer
+	m_CommandList->TransitResourceToWrite(m_DepthStencilBuffer->GetResource());
+
+	m_CommandList->Close();
+	m_CommandQueue->ExecuteCommandLists(m_CommandList.get());
+	m_CommandQueue->Flush();
 }
