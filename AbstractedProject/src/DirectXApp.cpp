@@ -34,7 +34,8 @@ DirectXApp::DirectXApp(HINSTANCE hInstance):
 	m_4xMsaaQuality(0),
 	m_CbvSrvUavDescriptorSize(0),
 	m_DsvDescriptorSize(0),
-	m_IsPaused(false)
+	m_IsPaused(false),
+	m_Camera(VECTOR_3_ZERO, 1.5f * XM_PI, 0.2f * XM_PI, 15.0f)
 {
 
 }
@@ -59,7 +60,8 @@ HRESULT DirectXApp::Initialize()
 	m_Window = std::make_unique<Window>(1024, 720, m_AppName, m_Factory->GetFactory());
 
 	ThrowIfFailedDefault(this->InitializeD3D());
-
+	this->CreateFrameResources();
+	
 	return S_OK;
 }
 
@@ -115,6 +117,11 @@ HRESULT DirectXApp::InitializeD3D()
 	// Create descriptor heaps
 	ThrowIfFailedDefault(CreateRtvAndDsvDescriptorHeaps());
 
+	unsigned int width = m_Window->GetWidth();
+	unsigned int height = m_Window->GetHeight();
+
+	this->ConfigureViewport(width, height);
+
 	//Create render target view
 	//First get buffer resources that are stored in the swapchain
 	//Buffer: an index identifying the particular back buffer we want to get (in case there's more than one.)
@@ -133,6 +140,18 @@ HRESULT DirectXApp::InitializeD3D()
 	//ID3D12Device::CreateRenderTargetView(ID3D12Resource* pResource, const D3D12_RENDER_TARGET_VIEW_DESC *pDesc, D3D12_CPU_DESCRIPTOR_HANDLE DescDescriptor);
 
 	return S_OK;
+}
+
+void DirectXApp::CreateFrameResources()
+{
+	for (unsigned int i = 0; i < NUM_FRAME_RESOURCES; ++i)
+	{
+		unsigned int passCount = 1;
+		unsigned int objectCount = 0;
+		unsigned int materialCount = 0;
+
+		m_FrameResources.push_back(std::make_unique<FrameResource>(m_Device.get(), passCount, objectCount, materialCount));
+	}
 }
 
 HRESULT DirectXApp::MainLoop()
@@ -177,6 +196,7 @@ void DirectXApp::OnEvent(Event& event)
 void DirectXApp::Update(const float dTime)
 {
 	UNREFERENCED_PARAMETER(dTime);
+	m_Camera.Update();
 }
 
 void DirectXApp::Draw()
@@ -205,6 +225,30 @@ void DirectXApp::CalculateFrameStats() const
 		frameCount = 0;
 		timeElapsed += 1.0f;
 	}
+}
+
+void DirectXApp::ConfigureViewport(unsigned int width, unsigned int height)
+{
+	m_SwapChain->Reset(m_Device.get(), width, height);
+	m_DepthStencilBuffer->Reset(m_Device.get(), width, height);
+	m_Device->CreateDepthStencilView(m_DepthStencilBuffer.get(), m_DsvHeap->GetCPUDescriptorHandle());
+
+	m_CommandQueue->Flush();
+	m_CommandList->Reset();
+	m_CommandList->TransitResourceToWrite(m_DepthStencilBuffer.get());
+
+	m_CommandList->Close();
+	m_CommandQueue->ExecuteCommandList(m_CommandList.get());
+	m_CommandQueue->Flush();
+
+	m_Viewport.TopLeftX = 0.0f;
+	m_Viewport.TopLeftY = 0.0f;
+	m_Viewport.Width = static_cast<float>(width);
+	m_Viewport.Height = static_cast<float>(height);
+	m_Viewport.MinDepth = 0;
+	m_Viewport.MaxDepth = 1;
+
+	m_ScissorRect = { 0, 0, (long)width, (long)height };
 }
 
 HRESULT DirectXApp::CreateCommandObjects()
@@ -245,32 +289,5 @@ void DirectXApp::OnResize(const Event& event)
 	unsigned int newWidth = m_Window->GetWidth();
 	unsigned int newHeight = m_Window->GetHeight();
 
-	m_CommandQueue->Flush();
-	m_CommandList->Reset();
-
-	// Release the previous resources we will be recreating
-	m_SwapChain->ResetBuffers();
-	m_SwapChain->ResizeBuffers(newWidth, newHeight);
-	m_SwapChain->ResetHeap(m_Device.get());
-
-	m_DepthStencilBuffer->Reset(m_Device.get());
-
-	//Create descriptor to mip level 0 of entire resource using the format of the resource.
-	m_Device->CreateDepthStencilView(m_DepthStencilBuffer.get(), m_DsvHeap->GetCPUDescriptorHandle());
-
-	//Transition the resource from its initial state to be used as a depth buffer
-	m_CommandList->TransitResourceToWrite(m_DepthStencilBuffer.get());
-	
-	m_CommandList->Close();
-	m_CommandQueue->ExecuteCommandList(m_CommandList.get());
-	m_CommandQueue->Flush();
-
-	m_Viewport.TopLeftX = 0.0f;
-	m_Viewport.TopLeftY = 0.0f;
-	m_Viewport.Width = static_cast<float>(newWidth);
-	m_Viewport.Height = static_cast<float>(newHeight);
-	m_Viewport.MinDepth = 0;
-	m_Viewport.MaxDepth = 1;
-
-	m_ScissorRect = { 0, 0, (long)newWidth, (long)newHeight };
+	this->ConfigureViewport(newWidth, newHeight);
 }
