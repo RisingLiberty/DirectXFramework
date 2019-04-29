@@ -1,5 +1,8 @@
 #pragma once
 
+using Viewport = D3D12_VIEWPORT;
+using Rect = D3D12_RECT;
+
 #include "GameTimer.h"
 
 class Window;
@@ -11,8 +14,8 @@ class CommandAllocator;
 class CommandList;
 class SwapChain;
 class DescriptorHeap;
+class Buffer2D;
 
-#include "Texture.h"
 #include "Event.h"
 
 class DirectXApp
@@ -40,7 +43,7 @@ private:
 	HRESULT CreateRtvAndDsvDescriptorHeaps();
 
 private:
-	void OnResize();
+	void OnResize(const Event& event);
 
 private:
 	std::wstring m_AppName;
@@ -54,6 +57,9 @@ private:
 	std::unique_ptr<SwapChain> m_SwapChain;
 	std::unique_ptr<DescriptorHeap> m_DsvHeap;
 	std::unique_ptr<Buffer2D> m_DepthStencilBuffer;
+
+	Viewport m_Viewport;
+	Rect m_ScissorRect;
 
 	UINT m_DsvDescriptorSize;
 	UINT m_CbvSrvUavDescriptorSize;

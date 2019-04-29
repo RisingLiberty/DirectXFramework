@@ -11,7 +11,7 @@
 #include "CommandList.h"
 #include "SwapChain.h"
 #include "DescriptorHeap.h"
-#include "Texture.h"
+#include "Buffer2D.h"
 
 #include "Utils.h"
 
@@ -170,8 +170,7 @@ void DirectXApp::OnEvent(Event& event)
 {
 	if (dynamic_cast<WindowEvent*>(&event))
 	{
-		m_Window->OnEvent(event);
-		this->OnResize();
+		this->OnResize(event);
 	}
 }
 
@@ -239,17 +238,39 @@ HRESULT DirectXApp::CreateRtvAndDsvDescriptorHeaps()
 	return S_OK;
 }
 
-void DirectXApp::OnResize()
+void DirectXApp::OnResize(const Event& event)
 {
+	m_Window->OnEvent(event);
+
+	unsigned int newWidth = m_Window->GetWidth();
+	unsigned int newHeight = m_Window->GetHeight();
+
 	m_CommandQueue->Flush();
 	m_CommandList->Reset();
 
 	// Release the previous resources we will be recreating
 	m_SwapChain->ResetBuffers();
-	m_SwapChain->ResizeBuffers(m_Window->GetWidth(), m_Window->GetHeight());
-	m_SwapChain->ResetHeap(m_Device->GetDevice());
+	m_SwapChain->ResizeBuffers(newWidth, newHeight);
+	m_SwapChain->ResetHeap(m_Device.get());
 
 	m_DepthStencilBuffer->Reset(m_Device.get());
+
 	//Create descriptor to mip level 0 of entire resource using the format of the resource.
-	m_Device->CreateDepthStencilView(m_DepthStencilBuffer->GetResource(), nullptr, GetDepthStencilView());
+	m_Device->CreateDepthStencilView(m_DepthStencilBuffer.get(), m_DsvHeap->GetCPUDescriptorHandle());
+
+	//Transition the resource from its initial state to be used as a depth buffer
+	m_CommandList->TransitResourceToWrite(m_DepthStencilBuffer.get());
+	
+	m_CommandList->Close();
+	m_CommandQueue->ExecuteCommandList(m_CommandList.get());
+	m_CommandQueue->Flush();
+
+	m_Viewport.TopLeftX = 0.0f;
+	m_Viewport.TopLeftY = 0.0f;
+	m_Viewport.Width = static_cast<float>(newWidth);
+	m_Viewport.Height = static_cast<float>(newHeight);
+	m_Viewport.MinDepth = 0;
+	m_Viewport.MaxDepth = 1;
+
+	m_ScissorRect = { 0, 0, (long)newWidth, (long)newHeight };
 }
