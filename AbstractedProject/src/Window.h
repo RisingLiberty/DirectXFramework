@@ -13,7 +13,7 @@ public:
 
 	UINT EventLoop();
 	void Show();
-	bool OnEvent(Event& e);
+	bool OnEvent(const Event& e);
 
 	bool IsPaused() const;
 	const std::vector<std::unique_ptr<Adapter>>& GetAdapters() const;

@@ -8,9 +8,9 @@
 namespace
 {
 	template <typename T>
-	T ConvertEvent(Event& event)
+	T ConvertEvent(const Event& event)
 	{
-		return *(dynamic_cast<T*>(&event));
+		return *(dynamic_cast<const T*>(&event));
 	}
 }
 
@@ -54,15 +54,15 @@ void Window::Show()
 	ShowWindow(m_WindowHandle, SW_SHOWDEFAULT);
 }
 
-bool Window::OnEvent(Event& e)
+bool Window::OnEvent(const Event& e)
 {
-	WindowEvent event = *(dynamic_cast<WindowEvent*>(&e));
+	const WindowEvent event = *(dynamic_cast<const WindowEvent*>(&e));
 
 	switch (event.GetType())
 	{
 	case WindowEventType::RESIZE:
 	{
-		WindowResizeEvent resizeEvent = ConvertEvent<WindowResizeEvent>(e);
+		const WindowResizeEvent resizeEvent = ConvertEvent<WindowResizeEvent>(e);
 		return this->OnResize(resizeEvent.Width, resizeEvent.Height);
 	}
 	case WindowEventType::KEY_UP:
