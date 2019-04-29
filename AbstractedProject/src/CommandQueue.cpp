@@ -2,6 +2,7 @@
 #include "CommandQueue.h"
 
 #include "Device.h"
+#include "CommandList.h"
 
 CommandQueue::CommandQueue(Device* pDevice, const D3D12_COMMAND_QUEUE_DESC& desc):
 	m_CurrentFenceValue(0)
@@ -52,4 +53,10 @@ ID3D12CommandQueue * CommandQueue::GetCommandQueue() const
 ID3D12CommandQueue * const * CommandQueue::GetCommandQueueAddress() const
 {
 	return m_CommandQueue.GetAddressOf();
+}
+
+void CommandQueue::ExecuteCommandList(CommandList* pCommandList) const
+{
+	ID3D12CommandList* pCmdList = pCommandList->GetCommandList();
+	m_CommandQueue->ExecuteCommandLists(1, &pCmdList);
 }
