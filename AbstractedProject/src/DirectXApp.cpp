@@ -9,9 +9,13 @@
 #include "CommandQueue.h"
 #include "CommandAllocator.h"
 #include "CommandList.h"
-
+#include "SwapChain.h"
+#include "DescriptorHeap.h"
+#include "Texture.h"
 
 #include "Utils.h"
+
+#include "WindowEvents.h"
 
 namespace
 {
@@ -26,7 +30,11 @@ namespace
 DirectXApp::DirectXApp(HINSTANCE hInstance):
 	m_AppName(L"Direct X App"),
 	m_hInstance(hInstance),
-	m_Window(nullptr)
+	m_Window(nullptr),
+	m_4xMsaaQuality(0),
+	m_CbvSrvUavDescriptorSize(0),
+	m_DsvDescriptorSize(0),
+	m_IsPaused(false)
 {
 
 }
@@ -48,7 +56,7 @@ HRESULT DirectXApp::Start()
 HRESULT DirectXApp::Initialize()
 {
 	m_Factory = std::make_unique<DirectXFactory>();
-	m_Window = std::make_unique<Window>(1043, 720, m_AppName, m_Factory->GetFactory());
+	m_Window = std::make_unique<Window>(1024, 720, m_AppName, m_Factory->GetFactory());
 
 	ThrowIfFailedDefault(this->InitializeD3D());
 
@@ -66,7 +74,9 @@ HRESULT DirectXApp::InitializeD3D()
 
 	//Enable debug layer
 #if defined(DEBUG) || defined (_DEBUG)
-	EnableDebugLayer();
+	ComPtr<ID3D12Debug> debugController;
+	if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(debugController.GetAddressOf()))))
+		debugController->EnableDebugLayer();
 #endif
 
 	//pAdapter: Specifies the display adapter we want the created device to represent.
@@ -81,13 +91,6 @@ HRESULT DirectXApp::InitializeD3D()
 	const std::vector<std::unique_ptr<Adapter>>& adapters = m_Window->GetAdapters();
 	m_Device = std::make_unique<Device>(adapters.front().get());
 
-	//After we have created our device, we can create our object for CPU/GPU synchronizatino.
-	//In addtion, once we get to working with descriptors, we are going to need to know their size.
-	//Descriptor sizes can vary across GPUs so we need to query this informatino. We cache the descriptor
-	//sizes so that it is available when we need it for various descriptor types.
-	m_Fence = std::make_unique<Fence>(0, D3D12_FENCE_FLAG_NONE, m_Device->GetDevice());
-
-	m_RtvDescriptorSize = m_Device->GetRenderTargetViewSize();
 	m_DsvDescriptorSize = m_Device->GetDepthStencilViewSize();
 	m_CbvSrvUavDescriptorSize = m_Device->GetShaderResourceViewSize();
 
@@ -107,10 +110,10 @@ HRESULT DirectXApp::InitializeD3D()
 	ThrowIfFailedDefault(CreateCommandObjects());
 
 	// Create swapchain
-	//ThrowIfFailed(CreateSwapChain());
+	m_SwapChain = std::make_unique<SwapChain>(m_Device.get(), m_Factory->GetFactory(), m_CommandQueue->GetCommandQueue(), m_Window.get(), 60, m_BackBufferFormat);
 
 	// Create descriptor heaps
-	//ThrowIfFailed(CreateRtvAndDsvDescriptorHeaps());
+	ThrowIfFailedDefault(CreateRtvAndDsvDescriptorHeaps());
 
 	//Create render target view
 	//First get buffer resources that are stored in the swapchain
@@ -130,8 +133,6 @@ HRESULT DirectXApp::InitializeD3D()
 	//ID3D12Device::CreateRenderTargetView(ID3D12Resource* pResource, const D3D12_RENDER_TARGET_VIEW_DESC *pDesc, D3D12_CPU_DESCRIPTOR_HANDLE DescDescriptor);
 
 	return S_OK;
-
-
 }
 
 HRESULT DirectXApp::MainLoop()
@@ -165,9 +166,18 @@ HRESULT DirectXApp::MainLoop()
 	return S_OK;
 }
 
+void DirectXApp::OnEvent(Event& event)
+{
+	if (dynamic_cast<WindowEvent*>(&event))
+	{
+		m_Window->OnEvent(event);
+		this->OnResize();
+	}
+}
+
 void DirectXApp::Update(const float dTime)
 {
-
+	UNREFERENCED_PARAMETER(dTime);
 }
 
 void DirectXApp::Draw()
@@ -204,11 +214,10 @@ HRESULT DirectXApp::CreateCommandObjects()
 	queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
 	queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
 
-	m_CommandQueue = std::make_unique<CommandQueue>(m_Device->GetDevice(), queueDesc);
-	m_CommandAllocator = std::make_unique<CommandAllocator>(m_Device->GetDevice(), D3D12_COMMAND_LIST_TYPE_DIRECT);
+	m_CommandQueue = std::make_unique<CommandQueue>(m_Device.get(), queueDesc);
 
 	//We specify null for the pipeline state object parameter.
-	m_CommandList = std::make_unique<CommandList>(m_Device->GetDevice(), m_CommandAllocator->GetAllocator(), D3D12_COMMAND_LIST_TYPE_DIRECT, 0);
+	m_CommandList = std::make_unique<CommandList>(m_Device.get(), D3D12_COMMAND_LIST_TYPE_DIRECT, 0);
 
 	//Start off in a closed state.
 	//This is because the first time we refer to the command list we will reset it, 
@@ -216,4 +225,31 @@ HRESULT DirectXApp::CreateCommandObjects()
 	m_CommandList->Close();
 
 	return S_OK;
+}
+
+HRESULT DirectXApp::CreateRtvAndDsvDescriptorHeaps()
+{
+	DescriptorHeapDesc dsvHeapDesc;
+	dsvHeapDesc.NumDescriptors = 1;
+	dsvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
+	dsvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+	dsvHeapDesc.NodeMask = 0;
+	m_DsvHeap = std::make_unique<DescriptorHeap>(m_Device.get(), dsvHeapDesc);
+
+	return S_OK;
+}
+
+void DirectXApp::OnResize()
+{
+	m_CommandQueue->Flush();
+	m_CommandList->Reset();
+
+	// Release the previous resources we will be recreating
+	m_SwapChain->ResetBuffers();
+	m_SwapChain->ResizeBuffers(m_Window->GetWidth(), m_Window->GetHeight());
+	m_SwapChain->ResetHeap(m_Device->GetDevice());
+
+	m_DepthStencilBuffer->Reset(m_Device.get());
+	//Create descriptor to mip level 0 of entire resource using the format of the resource.
+	m_Device->CreateDepthStencilView(m_DepthStencilBuffer->GetResource(), nullptr, GetDepthStencilView());
 }

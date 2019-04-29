@@ -9,7 +9,11 @@ class Fence;
 class CommandQueue;
 class CommandAllocator;
 class CommandList;
+class SwapChain;
+class DescriptorHeap;
 
+#include "Texture.h"
+#include "Event.h"
 
 class DirectXApp
 {
@@ -26,11 +30,17 @@ private:
 
 	HRESULT MainLoop();
 
+	void OnEvent(Event& event);
+
 	void Update(const float dTime);
 	void Draw();
 	void CalculateFrameStats() const;
 
 	HRESULT CreateCommandObjects();
+	HRESULT CreateRtvAndDsvDescriptorHeaps();
+
+private:
+	void OnResize();
 
 private:
 	std::wstring m_AppName;
@@ -39,13 +49,12 @@ private:
 	std::unique_ptr<Window> m_Window;
 	std::unique_ptr<DirectXFactory> m_Factory;
 	std::unique_ptr<Device> m_Device;
-	std::unique_ptr<Fence> m_Fence;
 	std::unique_ptr<CommandQueue> m_CommandQueue;
-	std::unique_ptr<CommandAllocator> m_CommandAllocator;
 	std::unique_ptr<CommandList> m_CommandList;
+	std::unique_ptr<SwapChain> m_SwapChain;
+	std::unique_ptr<DescriptorHeap> m_DsvHeap;
+	std::unique_ptr<Buffer2D> m_DepthStencilBuffer;
 
-
-	UINT m_RtvDescriptorSize;
 	UINT m_DsvDescriptorSize;
 	UINT m_CbvSrvUavDescriptorSize;
 
