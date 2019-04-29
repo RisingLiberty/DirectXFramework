@@ -21,6 +21,7 @@ public:
 	void CreateFence(unsigned int initialValue, D3D12_FENCE_FLAGS flags, ID3D12Fence** ppFence) const;
 	void CreateDescriptorHeap(const DescriptorHeapDesc& desc, ID3D12DescriptorHeap** ppDescriptorHeap) const;
 	void CreateResource(const CoreResourceDesc& desc, ID3D12Resource** ppResource) const;
+	void CreateRootSignature(unsigned int nodeMask, const void* pBlob, size_t blobSize, ID3D12RootSignature** ppRootSignature);
 
 	void CreateRenderTargetView(Buffer2D *pBuffer, D3D12_CPU_DESCRIPTOR_HANDLE destDescriptor, const D3D12_RENDER_TARGET_VIEW_DESC *pDesc = nullptr) const;
 	void CreateDepthStencilView(Buffer2D* pBuffer, D3D12_CPU_DESCRIPTOR_HANDLE destDescriptor, const D3D12_DEPTH_STENCIL_VIEW_DESC* pDesc = nullptr) const;

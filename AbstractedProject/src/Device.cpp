@@ -60,6 +60,11 @@ void Device::CreateResource(const CoreResourceDesc& desc, ID3D12Resource** ppRes
 	ThrowIfFailedDevice(m_Device->CreateCommittedResource(&desc.Props, desc.Flags, &desc.Desc, desc.States, desc.ClearValue, IID_PPV_ARGS(ppResource)));
 }
 
+void Device::CreateRootSignature(unsigned int nodeMask, const void* pBlob, size_t blobSize, ID3D12RootSignature** ppRootSignature)
+{
+	ThrowIfFailedDevice(m_Device->CreateRootSignature(nodeMask, pBlob, blobSize, IID_PPV_ARGS(ppRootSignature)))
+}
+
 void Device::CreateRenderTargetView(Buffer2D *pBuffer, D3D12_CPU_DESCRIPTOR_HANDLE destDescriptor, const D3D12_RENDER_TARGET_VIEW_DESC *pDesc) const
 {
 	m_Device->CreateRenderTargetView(pBuffer->GetResource(), pDesc, destDescriptor);
