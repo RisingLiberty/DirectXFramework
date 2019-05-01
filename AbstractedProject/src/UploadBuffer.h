@@ -58,7 +58,7 @@ public:
 		// the second parameter to Unmap is an optional pointer to a D3D12_RANGE structure that describes
 		// the range of memory to unmap. specifying null unmaps the entire resource.
 		if (m_UploadBuffer)
-			m_UploadBuffer->Unmap(0, nullptr);
+			m_UploadBuffer->Unmap();
 
 		m_MappedData = nullptr;
 	}
