@@ -22,6 +22,11 @@ Buffer2D::~Buffer2D()
 
 }
 
+void Buffer2D::Unmap()
+{
+	m_Resource->Unmap(0, nullptr);
+}
+
 void Buffer2D::Reset(Device* pDevice, unsigned int newWidth, unsigned int newHeight)
 {
 	m_Resource.Reset();

@@ -22,6 +22,7 @@ public:
 	~Buffer2D();
 
 	void Reset(Device* pDevice, unsigned int newWidth, unsigned int newHeight);
+	void Unmap();
 	
 	DXGI_FORMAT m_Format;
 	ID3D12Resource* GetResource() const;
