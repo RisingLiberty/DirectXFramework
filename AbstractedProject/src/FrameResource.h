@@ -1,9 +1,9 @@
 #pragma once
 
 class CommandAllocator;
-class PassConstants;
-class ObjectConstants;
-class MaterialConstants;
+struct PassConstants;
+struct ObjectConstants;
+struct MaterialConstants;
 
 class Device;
 
