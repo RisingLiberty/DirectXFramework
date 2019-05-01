@@ -12,6 +12,7 @@
 #include "SwapChain.h"
 #include "DescriptorHeap.h"
 #include "Buffer2D.h"
+#include "FrameResource.h"
 
 #include "Utils.h"
 
