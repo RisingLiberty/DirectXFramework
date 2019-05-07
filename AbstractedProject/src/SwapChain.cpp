@@ -36,6 +36,9 @@ SwapChain::SwapChain(Device* pDevice, IDXGIFactory1* pFactory, ID3D12CommandQueu
 	rtvHeapDesc.NodeMask = 0;
 	m_RtvHeap = std::make_unique<DescriptorHeap>(pDevice, rtvHeapDesc);
 	m_RtvDescriptorSize = pDevice->GetRenderTargetViewSize();
+
+	for (int i = 0; i < BUFFER_COUNT; ++i)
+		m_SwapChainBuffers[i] = std::make_unique<Buffer2D>(format);
 }
 
 SwapChain::~SwapChain()
@@ -57,7 +60,7 @@ void SwapChain::Reset(Device* pDevice, unsigned int newWidth, unsigned int newHe
 void SwapChain::ResetBuffers()
 {
 	for (int i = 0; i < BUFFER_COUNT; ++i)
-		m_SwapChainBuffers[i].reset();
+		m_SwapChainBuffers[i]->Reset();
 
 	m_CurrentBackBuffer = 0;
 }
