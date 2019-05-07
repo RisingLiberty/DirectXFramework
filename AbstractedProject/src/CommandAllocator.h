@@ -11,6 +11,8 @@ public:
 	ID3D12CommandAllocator* GetAllocator() const;
 	ID3D12CommandAllocator* const* GetAllocatorAddress() const;
 
+	void Reset();
+
 private:
 	ComPtr<ID3D12CommandAllocator> m_CommandAllocator;
 };
