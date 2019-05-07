@@ -36,7 +36,7 @@ DirectXApp::DirectXApp(HINSTANCE hInstance):
 	m_CbvSrvUavDescriptorSize(0),
 	m_DsvDescriptorSize(0),
 	m_IsPaused(false),
-	m_Camera(VECTOR_3_ZERO, 1.5f * XM_PI, 0.2f * XM_PI, 15.0f)
+	m_Camera(Float3(0,10,-10), 1.5f * XM_PI, 0.2f * XM_PI, 15.0f)
 {
 
 }
@@ -59,7 +59,7 @@ HRESULT DirectXApp::Initialize()
 {
 	m_Factory = std::make_unique<DirectXFactory>();
 	m_Window = std::make_unique<Window>(1024, 720, m_AppName, m_Factory->GetFactory());
-
+	m_Window->SetEventHandlerFn(std::bind(&DirectXApp::OnEvent, this, std::placeholders::_1));
 	ThrowIfFailedDefault(this->InitializeD3D());
 	this->CreateFrameResources();
 	
@@ -93,6 +93,8 @@ HRESULT DirectXApp::InitializeD3D()
 	//ppDevice: returns the created device.
 	const std::vector<std::unique_ptr<Adapter>>& adapters = m_Window->GetAdapters();
 	m_Device = std::make_unique<Device>(adapters.front().get());
+
+	m_DepthStencilBuffer = std::make_unique<Buffer2D>(DXGI_FORMAT_D24_UNORM_S8_UINT);
 
 	m_DsvDescriptorSize = m_Device->GetDepthStencilViewSize();
 	m_CbvSrvUavDescriptorSize = m_Device->GetShaderResourceViewSize();
@@ -148,8 +150,8 @@ void DirectXApp::CreateFrameResources()
 	for (unsigned int i = 0; i < NUM_FRAME_RESOURCES; ++i)
 	{
 		unsigned int passCount = 1;
-		unsigned int objectCount = 0;
-		unsigned int materialCount = 0;
+		unsigned int objectCount = 1;
+		unsigned int materialCount = 1;
 
 		m_FrameResources.push_back(std::make_unique<FrameResource>(m_Device.get(), passCount, objectCount, materialCount));
 	}
@@ -231,7 +233,9 @@ void DirectXApp::CalculateFrameStats() const
 void DirectXApp::ConfigureViewport(unsigned int width, unsigned int height)
 {
 	m_SwapChain->Reset(m_Device.get(), width, height);
-	m_DepthStencilBuffer->Reset(m_Device.get(), width, height);
+
+	m_DepthStencilBuffer->Reset();
+	m_DepthStencilBuffer->Create(m_Device.get(), width, height, D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL);
 	m_Device->CreateDepthStencilView(m_DepthStencilBuffer.get(), m_DsvHeap->GetCPUDescriptorHandle());
 
 	m_CommandQueue->Flush();
