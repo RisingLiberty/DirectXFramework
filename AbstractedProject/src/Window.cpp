@@ -162,6 +162,9 @@ LRESULT Window::WindowProcedureStatic(HWND hwnd, UINT message, WPARAM wParam, LP
 
 LRESULT Window::HandleEvent(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+	if (!m_EventHandlerFn)
+		return DefWindowProc(hwnd, message, wParam, lParam);
+
 	switch (message)
 	{
 		//Is sent when the window is being destroyed
