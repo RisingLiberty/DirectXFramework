@@ -13,6 +13,8 @@ public:
 	UploadBuffer(Device* pDevice, unsigned int elementCount, bool isConstantBuffer) :
 		m_IsConstantBuffer(isConstantBuffer)
 	{
+		m_UploadBuffer = std::make_unique<Buffer2D>();
+
 		m_ElementByteSize = sizeof(T);
 
 		// Constant buffer elements need to be multiples of 256 bytes
@@ -33,7 +35,7 @@ public:
 		CoreResourceDesc desc;
 		desc.Props = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
 		desc.Flags = D3D12_HEAP_FLAG_NONE;
-		desc.Desc = CD3DX12_RESOURCE_DESC::Buffer(m_ElementByteSize * elementCount);
+		desc.Desc = CD3DX12_RESOURCE_DESC::Buffer((UINT64)m_ElementByteSize * elementCount);
 		desc.States = D3D12_RESOURCE_STATE_GENERIC_READ;
 		desc.ClearValue = nullptr;
 
