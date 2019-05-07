@@ -14,6 +14,11 @@ class FrameResource
 public:
 	FrameResource(Device* pDevice, unsigned int passCount, unsigned int objectCount, unsigned int materialCount);
 
+	CommandAllocator* GetCommandAllocator() const;
+	UploadBuffer<PassConstants>* GetPassConstants() const;
+	UploadBuffer<ObjectConstants>* GetObjectConstants() const;
+	UploadBuffer<MaterialConstants>* GetMaterialConstants() const;
+
 private:
 	std::unique_ptr<CommandAllocator> m_pCommandAllocator;
 	std::unique_ptr<UploadBuffer<PassConstants>> m_pPassConstants;

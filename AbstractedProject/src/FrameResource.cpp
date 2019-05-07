@@ -13,3 +13,23 @@ FrameResource::FrameResource(Device* pDevice, unsigned int passCount, unsigned i
 	m_pObjectConstants = std::make_unique<UploadBuffer<ObjectConstants>>(pDevice, objectCount, true);
 	m_pMaterialConstants = std::make_unique<UploadBuffer<MaterialConstants>>(pDevice, materialCount, true);
 }
+
+CommandAllocator* FrameResource::GetCommandAllocator() const
+{
+	return m_pCommandAllocator.get();
+}
+
+UploadBuffer<PassConstants>* FrameResource::GetPassConstants() const
+{
+	return m_pPassConstants.get();
+}
+
+UploadBuffer<ObjectConstants>* FrameResource::GetObjectConstants() const
+{
+	return m_pObjectConstants.get();
+}
+
+UploadBuffer<MaterialConstants>* FrameResource::GetMaterialConstants() const
+{
+	return m_pMaterialConstants.get();
+}
