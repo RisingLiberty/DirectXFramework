@@ -48,4 +48,10 @@ inline std::wstring AnsiToWString(const std::string& str)
 {\
 	ThrowIfFailed(x, UploadBufferException); \
 }
+
+#define ThrowIfFailedCommandAllocator(x)\
+{\
+	ThrowIfFailed(x, CommandAllocatorException);\
+}
+
 #endif
