@@ -11,6 +11,12 @@ CoreResourceDesc::CoreResourceDesc():
 
 }
 
+Buffer2D::Buffer2D() :
+	m_Format(DXGI_FORMAT_UNKNOWN)
+{
+
+}
+
 Buffer2D::Buffer2D(const DXGI_FORMAT& format):
 	m_Format(format)
 {
@@ -27,22 +33,25 @@ void Buffer2D::Unmap()
 	m_Resource->Unmap(0, nullptr);
 }
 
-void Buffer2D::Reset(Device* pDevice, unsigned int newWidth, unsigned int newHeight)
+void Buffer2D::Reset()
 {
 	m_Resource.Reset();
+}
 
-	D3D12_RESOURCE_DESC depthStencilDesc;
-	depthStencilDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
-	depthStencilDesc.Alignment = 0;
-	depthStencilDesc.Width = newWidth;
-	depthStencilDesc.Height = newHeight;
-	depthStencilDesc.DepthOrArraySize = 1;
-	depthStencilDesc.MipLevels = 1;
-	depthStencilDesc.Format = m_Format;
-	depthStencilDesc.SampleDesc.Count = 1;
-	depthStencilDesc.SampleDesc.Quality = 0;
-	depthStencilDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
-	depthStencilDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
+void Buffer2D::Create(Device* pDevice, unsigned int newWidth, unsigned int newHeight, D3D12_RESOURCE_FLAGS flags)
+{
+	D3D12_RESOURCE_DESC desc;
+	desc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+	desc.Alignment = 0;
+	desc.Width = newWidth;
+	desc.Height = newHeight;
+	desc.DepthOrArraySize = 1;
+	desc.MipLevels = 1;
+	desc.Format = m_Format;
+	desc.SampleDesc.Count = 1;
+	desc.SampleDesc.Quality = 0;
+	desc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
+	desc.Flags = flags;
 
 	D3D12_CLEAR_VALUE optClear;
 	optClear.Format = m_Format;
@@ -50,7 +59,7 @@ void Buffer2D::Reset(Device* pDevice, unsigned int newWidth, unsigned int newHei
 	optClear.DepthStencil.Stencil = 0;
 
 	CoreResourceDesc coreDesc;
-	coreDesc.Desc = depthStencilDesc;
+	coreDesc.Desc = desc;
 	coreDesc.ClearValue = &optClear;
 
 	pDevice->CreateResource(coreDesc, m_Resource.ReleaseAndGetAddressOf());

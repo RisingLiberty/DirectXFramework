@@ -18,10 +18,12 @@ class Device;
 class Buffer2D
 {
 public:
+	Buffer2D();
 	Buffer2D(const DXGI_FORMAT& format);
 	~Buffer2D();
 
-	void Reset(Device* pDevice, unsigned int newWidth, unsigned int newHeight);
+	void Reset();
+	void Create(Device* pDevice, unsigned int newWidth, unsigned int newHeight, D3D12_RESOURCE_FLAGS flags = D3D12_RESOURCE_FLAGS::D3D12_RESOURCE_FLAG_NONE);
 	void Unmap();
 	
 	DXGI_FORMAT m_Format;
